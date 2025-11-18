@@ -17,7 +17,7 @@ export const supabaseStorage = {
     return data || [];
   },
 
-  saveMedicamentos: async (medicamentos: Medicamento[]): Promise<void> => {
+  saveMedicamentos: async (_medicamentos: Medicamento[]): Promise<void> => {
     // Esta función no se usa con Supabase ya que guardamos individualmente
     // La mantenemos por compatibilidad
     console.log('saveMedicamentos no se usa con Supabase');
@@ -114,7 +114,7 @@ export const supabaseStorage = {
     }));
   },
 
-  saveTomas: async (tomas: TomaMedicamento[]): Promise<void> => {
+  saveTomas: async (_tomas: TomaMedicamento[]): Promise<void> => {
     // No se usa con Supabase
     console.log('saveTomas no se usa con Supabase');
   },
