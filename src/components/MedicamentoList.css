@@ -1,0 +1,204 @@
+.medicamento-list {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  color: #333;
+  margin: 2rem 0 1rem 0;
+  font-size: 1.5rem;
+}
+
+.medicamentos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.medicamento-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.medicamento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.medicamento-card.inactive {
+  opacity: 0.6;
+  background: #f8f9fa;
+}
+
+.medicamento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.medicamento-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.medicamento-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-toggle {
+  padding: 0.5rem;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-toggle.active {
+  background: #10b981;
+  border-color: #10b981;
+  color: white;
+}
+
+.btn-toggle:hover {
+  transform: scale(1.1);
+}
+
+.btn-edit {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 50%;
+  background: #fff9e6;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-edit:hover {
+  background: #fbbf24;
+  transform: scale(1.1);
+}
+
+.btn-delete {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 50%;
+  background: #fff5f5;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background: #ff4757;
+  transform: scale(1.1);
+}
+
+.medicamento-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.info-row.notas {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  color: #333;
+  font-size: 1rem;
+}
+
+.horarios-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.horario-badge {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.horario-badge:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.horario-badge:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #999;
+}
+
+.empty-state p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .medicamentos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .medicamento-card {
+    padding: 1rem;
+  }
+
+  .medicamento-header h3 {
+    font-size: 1.1rem;
+  }
+}
