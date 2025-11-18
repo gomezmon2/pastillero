@@ -1,7 +1,0 @@
-data base password: mgy1WRW5dyp4pkb_gza
-
-Projet ID: yhcpdaxxxoxfjaxujfsf
-
-URL: https://yhcpdaxxxoxfjaxujfsf.supabase.co
-
-anon public: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InloY3BkYXh4eG94ZmpheHVqZnNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM0NjQ1OTEsImV4cCI6MjA3OTA0MDU5MX0.zwCASKZ1T78QwrZnTTZJjhAkOmF8wkt51zO6kpoK2-0
