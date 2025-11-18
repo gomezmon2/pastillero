@@ -62,6 +62,11 @@ export const storage = {
     }
   },
 
+  deleteToma: (id: string): void => {
+    const tomas = storage.getTomas().filter(t => t.id !== id);
+    storage.saveTomas(tomas);
+  },
+
   // Paciente
   getPaciente: (): Paciente | null => {
     const data = localStorage.getItem(STORAGE_KEYS.PACIENTE);

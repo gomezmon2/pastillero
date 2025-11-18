@@ -78,16 +78,19 @@ export const supabaseStorage = {
   updateMedicamento: async (id: string, medicamento: Partial<Medicamento>): Promise<void> => {
     const updateData: Record<string, unknown> = {};
 
-    if (medicamento.nombre) updateData.nombre = medicamento.nombre;
-    if (medicamento.dosis) updateData.dosis = medicamento.dosis;
-    if (medicamento.frecuencia) updateData.frecuencia = medicamento.frecuencia;
-    if (medicamento.horarios) updateData.horarios = medicamento.horarios;
-    if (medicamento.numeroPastillas !== undefined) updateData.numero_pastillas = medicamento.numeroPastillas;
-    if (medicamento.imagenUrl !== undefined) updateData.imagen_url = medicamento.imagenUrl;
-    if (medicamento.fechaInicio) updateData.fecha_inicio = medicamento.fechaInicio;
-    if (medicamento.fechaFin !== undefined) updateData.fecha_fin = medicamento.fechaFin;
-    if (medicamento.notas !== undefined) updateData.notas = medicamento.notas;
+    // Campos requeridos - siempre actualizar si están presentes
+    if (medicamento.nombre !== undefined) updateData.nombre = medicamento.nombre;
+    if (medicamento.dosis !== undefined) updateData.dosis = medicamento.dosis;
+    if (medicamento.frecuencia !== undefined) updateData.frecuencia = medicamento.frecuencia;
+    if (medicamento.horarios !== undefined) updateData.horarios = medicamento.horarios;
+    if (medicamento.fechaInicio !== undefined) updateData.fecha_inicio = medicamento.fechaInicio;
     if (medicamento.activo !== undefined) updateData.activo = medicamento.activo;
+
+    // Campos opcionales - actualizar si están presentes (incluso si son null/vacíos)
+    if (medicamento.numeroPastillas !== undefined) updateData.numero_pastillas = medicamento.numeroPastillas;
+    if (medicamento.imagenUrl !== undefined) updateData.imagen_url = medicamento.imagenUrl || null;
+    if (medicamento.fechaFin !== undefined) updateData.fecha_fin = medicamento.fechaFin || null;
+    if (medicamento.notas !== undefined) updateData.notas = medicamento.notas || null;
 
     const { error } = await supabase
       .from('medicamentos')
@@ -96,6 +99,7 @@ export const supabaseStorage = {
 
     if (error) {
       console.error('Error al actualizar medicamento:', error);
+      throw error;
     }
   },
 
@@ -167,6 +171,17 @@ export const supabaseStorage = {
 
     if (error) {
       console.error('Error al actualizar toma:', error);
+    }
+  },
+
+  deleteToma: async (id: string): Promise<void> => {
+    const { error } = await supabase
+      .from('tomas')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error al eliminar toma:', error);
     }
   },
 

@@ -6,7 +6,7 @@ interface MedicamentoListProps {
   medicamentos: Medicamento[];
   onToggleActivo: (id: string) => void;
   onDelete: (id: string) => void;
-  onMarcarTomado: (medicamentoId: string, horario: string) => void;
+  onMarcarTomado: (medicamentoId: string, horario: string, fecha: Date, estabaTomado: boolean) => void;
   onEdit: (medicamento: Medicamento) => void;
 }
 
@@ -40,22 +40,7 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
   const renderMedicamento = (med: Medicamento) => (
     <div key={med.id} className={`medicamento-card ${!med.activo ? 'inactive' : ''}`}>
       <div className="medicamento-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {med.imagenUrl && (
-            <img
-              src={med.imagenUrl}
-              alt={med.nombre}
-              style={{
-                width: '50px',
-                height: '50px',
-                borderRadius: '8px',
-                objectFit: 'cover',
-                border: '2px solid #e0e0e0'
-              }}
-            />
-          )}
-          <h3>{med.nombre}</h3>
-        </div>
+        <h3>{med.nombre}</h3>
         <div className="medicamento-actions">
           <button
             onClick={() => onEdit(med)}
@@ -85,6 +70,20 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
         </div>
       </div>
 
+      {med.imagenUrl && (
+        <div className="medicamento-image-container">
+          <img
+            src={med.imagenUrl}
+            alt={med.nombre}
+            className="medicamento-image"
+            onError={(e) => {
+              console.error('Error al cargar imagen:', med.imagenUrl);
+              (e.target as HTMLImageElement).parentElement!.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+
       <div className="medicamento-info">
         <div className="info-row">
           <span className="info-label">Dosis:</span>
@@ -111,7 +110,7 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
             {med.horarios.map((horario, index) => (
               <button
                 key={index}
-                onClick={() => onMarcarTomado(med.id, horario)}
+                onClick={() => onMarcarTomado(med.id, horario, new Date(), false)}
                 className="horario-badge"
                 disabled={!med.activo}
                 title="Marcar como tomado"

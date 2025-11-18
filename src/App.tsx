@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import MedicamentoForm from './components/MedicamentoForm';
 import MedicamentoList from './components/MedicamentoList';
+import CalendarioView from './components/CalendarioView';
 import { NotificationSetup } from './components/NotificationSetup';
 import type { Medicamento, TomaMedicamento } from './types';
 import { supabaseStorage } from './utils/supabaseStorage';
@@ -11,12 +12,16 @@ import './App.css';
 // Detectar si Supabase está configurado
 const isSupabaseConfigured = import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+type Vista = 'lista' | 'calendario';
+
 function App() {
   const [medicamentos, setMedicamentos] = useState<Medicamento[]>([]);
+  const [tomas, setTomas] = useState<TomaMedicamento[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
   const [medicamentoEditando, setMedicamentoEditando] = useState<Medicamento | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const [vista, setVista] = useState<Vista>('lista');
 
   // Registrar Service Worker y escuchar mensajes
   useEffect(() => {
@@ -30,7 +35,7 @@ function App() {
       // Escuchar mensajes del Service Worker
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data.type === 'MARK_MEDICATION_TAKEN') {
-          handleMarcarTomado(event.data.medicamentoId, event.data.hora);
+          handleMarcarTomado(event.data.medicamentoId, event.data.hora, new Date(), false);
         }
       });
     }
@@ -39,6 +44,7 @@ function App() {
   // Cargar medicamentos al iniciar
   useEffect(() => {
     loadMedicamentos();
+    loadTomas();
   }, []);
 
   const loadMedicamentos = async () => {
@@ -56,6 +62,20 @@ function App() {
       showNotification('Error al cargar medicamentos');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadTomas = async () => {
+    try {
+      if (isSupabaseConfigured) {
+        const tomasData = await supabaseStorage.getTomas();
+        setTomas(tomasData);
+      } else {
+        const tomasData = storage.getTomas();
+        setTomas(tomasData);
+      }
+    } catch (error) {
+      console.error('Error al cargar tomas:', error);
     }
   };
 
@@ -152,26 +172,46 @@ function App() {
     showNotification(`${med.nombre} eliminado`);
   };
 
-  const handleMarcarTomado = async (medicamentoId: string, horario: string) => {
+  const handleMarcarTomado = async (medicamentoId: string, horario: string, fecha: Date, estabaTomado: boolean) => {
     const med = medicamentos.find((m) => m.id === medicamentoId);
     if (!med) return;
 
-    const now = new Date();
-    const toma: TomaMedicamento = {
-      id: Date.now().toString(),
-      medicamentoId,
-      fecha: now.toISOString().split('T')[0],
-      hora: horario,
-      tomado: true,
-    };
+    const fechaStr = fecha.toISOString().split('T')[0];
 
-    if (isSupabaseConfigured) {
-      await supabaseStorage.addToma(toma);
+    if (estabaTomado) {
+      // Desmarcar - buscar y eliminar la toma
+      const tomaExistente = tomas.find(
+        (t) => t.medicamentoId === medicamentoId && t.fecha === fechaStr && t.hora === horario
+      );
+
+      if (tomaExistente) {
+        if (isSupabaseConfigured) {
+          await supabaseStorage.deleteToma(tomaExistente.id);
+        } else {
+          storage.deleteToma(tomaExistente.id);
+        }
+        showNotification(`${med.nombre} desmarcado (${horario})`);
+      }
     } else {
-      storage.addToma(toma);
+      // Marcar como tomado
+      const toma: TomaMedicamento = {
+        id: Date.now().toString(),
+        medicamentoId,
+        fecha: fechaStr,
+        hora: horario,
+        tomado: true,
+      };
+
+      if (isSupabaseConfigured) {
+        await supabaseStorage.addToma(toma);
+      } else {
+        storage.addToma(toma);
+      }
+      showNotification(`✓ ${med.nombre} marcado como tomado a las ${horario}`);
     }
 
-    showNotification(`✓ ${med.nombre} marcado como tomado a las ${horario}`);
+    // Recargar tomas para actualizar el calendario
+    await loadTomas();
   };
 
   const showNotification = (message: string) => {
@@ -230,6 +270,21 @@ function App() {
             >
               {showForm ? '✕ Cancelar' : '+ Agregar Medicamento'}
             </button>
+
+            <div className="view-toggle">
+              <button
+                onClick={() => setVista('lista')}
+                className={`btn-view ${vista === 'lista' ? 'active' : ''}`}
+              >
+                📋 Lista
+              </button>
+              <button
+                onClick={() => setVista('calendario')}
+                className={`btn-view ${vista === 'calendario' ? 'active' : ''}`}
+              >
+                📅 Calendario
+              </button>
+            </div>
           </div>
 
           {showForm && (
@@ -240,13 +295,21 @@ function App() {
             />
           )}
 
-          <MedicamentoList
-            medicamentos={medicamentos}
-            onToggleActivo={handleToggleActivo}
-            onDelete={handleDelete}
-            onMarcarTomado={handleMarcarTomado}
-            onEdit={handleEditMedicamento}
-          />
+          {vista === 'lista' ? (
+            <MedicamentoList
+              medicamentos={medicamentos}
+              onToggleActivo={handleToggleActivo}
+              onDelete={handleDelete}
+              onMarcarTomado={handleMarcarTomado}
+              onEdit={handleEditMedicamento}
+            />
+          ) : (
+            <CalendarioView
+              medicamentos={medicamentos}
+              tomas={tomas}
+              onMarcarTomado={handleMarcarTomado}
+            />
+          )}
         </div>
       </main>
 

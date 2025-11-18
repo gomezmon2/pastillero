@@ -30,8 +30,11 @@ body {
 
 .top-actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .btn-add-medicamento {
@@ -50,6 +53,38 @@ body {
 .btn-add-medicamento:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  background: #f3f4f6;
+  padding: 0.5rem;
+  border-radius: 8px;
+}
+
+.btn-view {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: #666;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-view:hover {
+  background: #e5e7eb;
+  color: #333;
+}
+
+.btn-view.active {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
 }
 
 .notification {
@@ -93,6 +128,19 @@ body {
 @media (max-width: 768px) {
   .main-content {
     padding: 1rem 0.5rem;
+  }
+
+  .top-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .view-toggle {
+    justify-content: center;
+  }
+
+  .btn-view {
+    flex: 1;
   }
 
   .notification {

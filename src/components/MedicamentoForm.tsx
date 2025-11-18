@@ -88,7 +88,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
     onSubmit({
       ...formData,
       horarios: horariosFiltrados,
-      imagenUrl: imagenUrl || undefined,
+      imagenUrl: imagenUrl,
       activo: formData.activo,
     });
 
