@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import MedicamentoForm from './components/MedicamentoForm';
 import MedicamentoList from './components/MedicamentoList';
+import { NotificationSetup } from './components/NotificationSetup';
 import type { Medicamento, TomaMedicamento } from './types';
 import { supabaseStorage } from './utils/supabaseStorage';
 import { storage } from './utils/storage';
@@ -16,6 +17,24 @@ function App() {
   const [notification, setNotification] = useState<string | null>(null);
   const [medicamentoEditando, setMedicamentoEditando] = useState<Medicamento | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+
+  // Registrar Service Worker y escuchar mensajes
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then((registration) => {
+        console.log('Service Worker registrado:', registration);
+      }).catch((error) => {
+        console.error('Error al registrar Service Worker:', error);
+      });
+
+      // Escuchar mensajes del Service Worker
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'MARK_MEDICATION_TAKEN') {
+          handleMarcarTomado(event.data.medicamentoId, event.data.hora);
+        }
+      });
+    }
+  }, []);
 
   // Cargar medicamentos al iniciar
   useEffect(() => {
@@ -196,6 +215,8 @@ function App() {
 
       <main className="main-content">
         <div className="container">
+          <NotificationSetup medicamentos={medicamentos} />
+
           <div className="top-actions">
             <button
               onClick={() => {

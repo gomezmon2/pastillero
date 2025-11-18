@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Medicamento } from '../types';
+import { uploadMedicamentoImage, compressImage } from '../utils/imageUpload';
 import './MedicamentoForm.css';
 
 interface MedicamentoFormProps {
@@ -14,11 +15,17 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
     dosis: '',
     frecuencia: '',
     horarios: [''],
+    numeroPastillas: 1,
+    imagenUrl: '',
     fechaInicio: new Date().toISOString().split('T')[0],
     fechaFin: '',
     notas: '',
     activo: true,
   });
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Cargar datos si estamos editando
   useEffect(() => {
@@ -28,15 +35,21 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
         dosis: medicamentoToEdit.dosis,
         frecuencia: medicamentoToEdit.frecuencia,
         horarios: medicamentoToEdit.horarios,
+        numeroPastillas: medicamentoToEdit.numeroPastillas || 1,
+        imagenUrl: medicamentoToEdit.imagenUrl || '',
         fechaInicio: medicamentoToEdit.fechaInicio,
         fechaFin: medicamentoToEdit.fechaFin || '',
         notas: medicamentoToEdit.notas || '',
         activo: medicamentoToEdit.activo,
       });
+      // Cargar vista previa de imagen si existe
+      if (medicamentoToEdit.imagenUrl) {
+        setImagePreview(medicamentoToEdit.imagenUrl);
+      }
     }
   }, [medicamentoToEdit]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.nombre || !formData.dosis || !formData.frecuencia) {
@@ -51,9 +64,31 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
       return;
     }
 
+    // Subir imagen si hay un archivo seleccionado
+    let imagenUrl = formData.imagenUrl;
+    if (imageFile) {
+      setUploadingImage(true);
+      try {
+        // Comprimir la imagen antes de subir
+        const compressedFile = await compressImage(imageFile);
+        // Generar ID temporal para el archivo
+        const tempId = medicamentoToEdit?.id || Date.now().toString();
+        const uploadedUrl = await uploadMedicamentoImage(compressedFile, tempId);
+        if (uploadedUrl) {
+          imagenUrl = uploadedUrl;
+        }
+      } catch (error) {
+        console.error('Error al subir imagen:', error);
+        alert('Error al subir la imagen. El medicamento se guardará sin imagen.');
+      } finally {
+        setUploadingImage(false);
+      }
+    }
+
     onSubmit({
       ...formData,
       horarios: horariosFiltrados,
+      imagenUrl: imagenUrl || undefined,
       activo: formData.activo,
     });
 
@@ -64,12 +99,50 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
         dosis: '',
         frecuencia: '',
         horarios: [''],
+        numeroPastillas: 1,
+        imagenUrl: '',
         fechaInicio: new Date().toISOString().split('T')[0],
         fechaFin: '',
         notas: '',
         activo: true,
       });
+      setImageFile(null);
+      setImagePreview('');
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Tipo de archivo no permitido. Solo se permiten imágenes (JPG, PNG, WebP, GIF)');
+      return;
+    }
+
+    // Validar tamaño (máximo 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('La imagen es muy grande. El tamaño máximo es 5MB');
+      return;
+    }
+
+    setImageFile(file);
+
+    // Generar vista previa
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview('');
+    setFormData({ ...formData, imagenUrl: '' });
   };
 
   const handleHorarioChange = (index: number, value: string) => {
@@ -137,6 +210,93 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
       </div>
 
       <div className="form-group">
+        <label htmlFor="numeroPastillas">Número de pastillas por toma</label>
+        <input
+          type="number"
+          id="numeroPastillas"
+          value={formData.numeroPastillas}
+          onChange={(e) => setFormData({ ...formData, numeroPastillas: parseFloat(e.target.value) || 1 })}
+          placeholder="ej: 1, 2, 0.5"
+          min="0.25"
+          step="0.25"
+        />
+        <small style={{ color: '#666', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+          Puedes usar decimales (ej: 0.5 para media pastilla)
+        </small>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="imagen">Imagen del medicamento</label>
+        <input
+          type="file"
+          id="imagen"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+          onChange={handleImageChange}
+          style={{ display: 'none' }}
+        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {imagePreview ? (
+            <div style={{ position: 'relative', width: 'fit-content' }}>
+              <img
+                src={imagePreview}
+                alt="Vista previa"
+                style={{
+                  maxWidth: '200px',
+                  maxHeight: '200px',
+                  borderRadius: '8px',
+                  objectFit: 'cover',
+                  border: '2px solid #e0e0e0'
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                style={{
+                  position: 'absolute',
+                  top: '5px',
+                  right: '5px',
+                  backgroundColor: '#ef4444',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '30px',
+                  height: '30px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Eliminar imagen"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <label
+              htmlFor="imagen"
+              style={{
+                display: 'inline-block',
+                padding: '10px 20px',
+                backgroundColor: '#f3f4f6',
+                border: '2px dashed #d1d5db',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                textAlign: 'center',
+                transition: 'all 0.2s',
+                width: 'fit-content'
+              }}
+            >
+              📷 Seleccionar imagen
+            </label>
+          )}
+          <small style={{ color: '#666', fontSize: '12px' }}>
+            Formatos: JPG, PNG, WebP, GIF. Máximo: 5MB
+          </small>
+        </div>
+      </div>
+
+      <div className="form-group">
         <label>Horarios *</label>
         {formData.horarios.map((horario, index) => (
           <div key={index} className="horario-input-group">
@@ -196,11 +356,11 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
       </div>
 
       <div className="form-actions">
-        <button type="submit" className="btn-primary">
-          {medicamentoToEdit ? 'Actualizar Medicamento' : 'Guardar Medicamento'}
+        <button type="submit" className="btn-primary" disabled={uploadingImage}>
+          {uploadingImage ? '⏳ Subiendo imagen...' : medicamentoToEdit ? 'Actualizar Medicamento' : 'Guardar Medicamento'}
         </button>
         {onCancel && (
-          <button type="button" onClick={onCancel} className="btn-secondary">
+          <button type="button" onClick={onCancel} className="btn-secondary" disabled={uploadingImage}>
             Cancelar
           </button>
         )}

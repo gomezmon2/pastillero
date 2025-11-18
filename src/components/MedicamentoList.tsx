@@ -40,7 +40,22 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
   const renderMedicamento = (med: Medicamento) => (
     <div key={med.id} className={`medicamento-card ${!med.activo ? 'inactive' : ''}`}>
       <div className="medicamento-header">
-        <h3>{med.nombre}</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {med.imagenUrl && (
+            <img
+              src={med.imagenUrl}
+              alt={med.nombre}
+              style={{
+                width: '50px',
+                height: '50px',
+                borderRadius: '8px',
+                objectFit: 'cover',
+                border: '2px solid #e0e0e0'
+              }}
+            />
+          )}
+          <h3>{med.nombre}</h3>
+        </div>
         <div className="medicamento-actions">
           <button
             onClick={() => onEdit(med)}
@@ -75,6 +90,15 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
           <span className="info-label">Dosis:</span>
           <span className="info-value">{med.dosis}</span>
         </div>
+
+        {med.numeroPastillas && (
+          <div className="info-row">
+            <span className="info-label">Cantidad:</span>
+            <span className="info-value">
+              💊 {med.numeroPastillas} {med.numeroPastillas === 1 ? 'pastilla' : 'pastillas'}
+            </span>
+          </div>
+        )}
 
         <div className="info-row">
           <span className="info-label">Frecuencia:</span>

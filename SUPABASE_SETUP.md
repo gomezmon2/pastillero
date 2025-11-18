@@ -34,6 +34,8 @@ CREATE TABLE medicamentos (
   dosis TEXT NOT NULL,
   frecuencia TEXT NOT NULL,
   horarios TEXT[] NOT NULL,
+  numero_pastillas NUMERIC,
+  imagen_url TEXT,
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE,
   notas TEXT,

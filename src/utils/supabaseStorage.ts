@@ -14,7 +14,19 @@ export const supabaseStorage = {
       return [];
     }
 
-    return data || [];
+    return (data || []).map((med) => ({
+      id: med.id,
+      nombre: med.nombre,
+      dosis: med.dosis,
+      frecuencia: med.frecuencia,
+      horarios: med.horarios,
+      numeroPastillas: med.numero_pastillas,
+      imagenUrl: med.imagen_url,
+      fechaInicio: med.fecha_inicio,
+      fechaFin: med.fecha_fin,
+      notas: med.notas,
+      activo: med.activo,
+    }));
   },
 
   saveMedicamentos: async (_medicamentos: Medicamento[]): Promise<void> => {
@@ -32,6 +44,8 @@ export const supabaseStorage = {
         dosis: medicamento.dosis,
         frecuencia: medicamento.frecuencia,
         horarios: medicamento.horarios,
+        numero_pastillas: medicamento.numeroPastillas || null,
+        imagen_url: medicamento.imagenUrl || null,
         fecha_inicio: medicamento.fechaInicio,
         fecha_fin: medicamento.fechaFin || null,
         notas: medicamento.notas || null,
@@ -52,6 +66,8 @@ export const supabaseStorage = {
       dosis: data.dosis,
       frecuencia: data.frecuencia,
       horarios: data.horarios,
+      numeroPastillas: data.numero_pastillas,
+      imagenUrl: data.imagen_url,
       fechaInicio: data.fecha_inicio,
       fechaFin: data.fecha_fin,
       notas: data.notas,
@@ -66,6 +82,8 @@ export const supabaseStorage = {
     if (medicamento.dosis) updateData.dosis = medicamento.dosis;
     if (medicamento.frecuencia) updateData.frecuencia = medicamento.frecuencia;
     if (medicamento.horarios) updateData.horarios = medicamento.horarios;
+    if (medicamento.numeroPastillas !== undefined) updateData.numero_pastillas = medicamento.numeroPastillas;
+    if (medicamento.imagenUrl !== undefined) updateData.imagen_url = medicamento.imagenUrl;
     if (medicamento.fechaInicio) updateData.fecha_inicio = medicamento.fechaInicio;
     if (medicamento.fechaFin !== undefined) updateData.fecha_fin = medicamento.fechaFin;
     if (medicamento.notas !== undefined) updateData.notas = medicamento.notas;

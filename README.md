@@ -14,6 +14,9 @@ Una aplicación web moderna para gestionar medicamentos y recordatorios de toma,
 - **Fallback local**: Funciona con localStorage si no hay conexión
 - **Diseño responsivo**: Funciona perfectamente en desktop y móvil
 - **Notificaciones visuales**: Feedback inmediato de todas las acciones
+- **PWA (Progressive Web App)**: Instalable como app nativa en móvil y desktop
+- **Notificaciones push**: Recordatorios incluso cuando la app está cerrada
+- **Funciona offline**: Service Worker para acceso sin conexión
 
 ## Demo en Vivo
 
@@ -117,28 +120,68 @@ Pasos rápidos:
 - **Activar/Desactivar**: Clic en el botón (✓/○)
 - **Eliminar**: Clic en el botón de basura (🗑️)
 
+### Instalar como App (PWA)
+
+#### En Android (Chrome/Edge):
+
+1. Abre la aplicación en Chrome o Edge
+2. Toca el menú (⋮) y selecciona "Instalar aplicación" o "Agregar a pantalla de inicio"
+3. Confirma la instalación
+4. La app aparecerá en tu pantalla de inicio como una app nativa
+
+#### En iOS (Safari):
+
+1. Abre la aplicación en Safari
+2. Toca el botón de compartir (⬆️)
+3. Selecciona "Agregar a pantalla de inicio"
+4. Confirma y la app aparecerá en tu pantalla de inicio
+
+**Nota**: Las notificaciones push tienen limitaciones en iOS Safari.
+
+#### En Desktop (Chrome/Edge):
+
+1. Abre la aplicación en Chrome o Edge
+2. Busca el ícono de instalación (➕) en la barra de direcciones
+3. Haz clic en "Instalar"
+4. La app se abrirá en su propia ventana
+
+### Configurar Notificaciones
+
+1. Al abrir la app, verás un banner para activar notificaciones
+2. Haz clic en "Activar"
+3. Acepta el permiso en el navegador
+4. Recibirás recordatorios automáticos en los horarios configurados
+5. Las notificaciones funcionan incluso con la app cerrada (excepto en iOS)
+
 ## Estructura del Proyecto
 
 ```
 pastillero/
+├── public/
+│   ├── icon.svg                # Ícono de la app (PWA)
+│   ├── manifest.json           # Manifiesto PWA
+│   └── sw.js                   # Service Worker personalizado
 ├── src/
 │   ├── components/              # Componentes React
 │   │   ├── Header.tsx          # Encabezado
 │   │   ├── MedicamentoForm.tsx # Formulario (agregar/editar)
-│   │   └── MedicamentoList.tsx # Lista de medicamentos
+│   │   ├── MedicamentoList.tsx # Lista de medicamentos
+│   │   └── NotificationSetup.tsx # Banner de notificaciones
 │   ├── lib/
 │   │   └── supabase.ts         # Cliente de Supabase
 │   ├── types/
 │   │   └── index.ts            # Tipos TypeScript
 │   ├── utils/
 │   │   ├── storage.ts          # Storage local
-│   │   └── supabaseStorage.ts  # Storage con Supabase
+│   │   ├── supabaseStorage.ts  # Storage con Supabase
+│   │   └── notifications.ts    # Utilidades de notificaciones
 │   ├── App.tsx                 # Componente principal
 │   ├── App.css                 # Estilos principales
 │   └── main.tsx                # Punto de entrada
 ├── .env.example                # Plantilla de variables de entorno
 ├── SUPABASE_SETUP.md          # Guía de configuración de Supabase
 ├── DEPLOY.md                   # Guía de despliegue
+├── vite.config.ts              # Configuración Vite con PWA
 └── package.json
 ```
 
@@ -164,6 +207,7 @@ npm run lint         # Ejecuta ESLint
 - `dosis` - Dosis (ej: 400mg)
 - `frecuencia` - Frecuencia de toma
 - `horarios` - Array de horarios
+- `numero_pastillas` - Número de pastillas por toma (ej: 1, 2, 0.5)
 - `fecha_inicio` - Fecha de inicio
 - `fecha_fin` - Fecha de fin (opcional)
 - `notas` - Notas adicionales
@@ -184,12 +228,15 @@ npm run lint         # Ejecuta ESLint
 - ✅ Registro de tomas
 - ✅ Persistencia con Supabase/LocalStorage
 - ✅ Diseño responsivo
+- ✅ PWA instalable
+- ✅ Notificaciones push
+- ✅ Service Worker para offline
 
 ### v1.1 (Próximamente)
-- 🔔 Notificaciones del navegador
 - 📊 Dashboard de estadísticas
 - 📅 Vista de calendario
 - 🌙 Modo oscuro
+- 🔄 Sincronización en tiempo real
 
 ### v2.0 (Futuro)
 - 👤 Autenticación de usuarios
