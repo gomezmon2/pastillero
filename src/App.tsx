@@ -269,13 +269,19 @@ function App() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleExportarPDF = () => {
+  const handleExportarPDF = async () => {
     if (medicamentos.length === 0) {
       showNotification('No hay medicamentos para exportar');
       return;
     }
-    exportarMedicamentosPDF(medicamentos, usuario?.nombre || usuario?.email);
-    showNotification('PDF generado correctamente');
+    try {
+      showNotification('Generando PDF...');
+      await exportarMedicamentosPDF(medicamentos, usuario?.nombre || usuario?.email);
+      showNotification('✓ PDF generado correctamente');
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      showNotification('❌ Error al generar PDF');
+    }
   };
 
   // Funciones de autenticación
