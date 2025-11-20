@@ -5,10 +5,12 @@ import MedicamentoList from './components/MedicamentoList';
 import CalendarioView from './components/CalendarioView';
 import { NotificationSetup } from './components/NotificationSetup';
 import Auth from './components/Auth';
+import AcercaDe from './components/AcercaDe';
 import type { Medicamento, TomaMedicamento, Usuario } from './types';
 import { supabaseStorage } from './utils/supabaseStorage';
 import { storage } from './utils/storage';
 import { authService } from './utils/authService';
+import { exportarMedicamentosPDF } from './utils/pdfExport';
 import './App.css';
 
 // Detectar si Supabase está configurado
@@ -27,6 +29,7 @@ function App() {
   const [medicamentoEditando, setMedicamentoEditando] = useState<Medicamento | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [vista, setVista] = useState<Vista>('lista');
+  const [showAcercaDe, setShowAcercaDe] = useState(false);
 
   // Verificar autenticación al cargar
   useEffect(() => {
@@ -266,6 +269,15 @@ function App() {
     setTimeout(() => setNotification(null), 3000);
   };
 
+  const handleExportarPDF = () => {
+    if (medicamentos.length === 0) {
+      showNotification('No hay medicamentos para exportar');
+      return;
+    }
+    exportarMedicamentosPDF(medicamentos, usuario?.nombre || usuario?.email);
+    showNotification('PDF generado correctamente');
+  };
+
   // Funciones de autenticación
   const handleLogin = async (email: string, password: string) => {
     try {
@@ -421,6 +433,23 @@ function App() {
                 📅 Calendario
               </button>
             </div>
+
+            <div className="utility-buttons">
+              <button
+                onClick={handleExportarPDF}
+                className="btn-utility"
+                title="Exportar a PDF"
+              >
+                📄 PDF
+              </button>
+              <button
+                onClick={() => setShowAcercaDe(true)}
+                className="btn-utility"
+                title="Acerca de"
+              >
+                ℹ️ Acerca de
+              </button>
+            </div>
           </div>
 
           {showForm && (
@@ -452,6 +481,8 @@ function App() {
       <footer className="footer">
         <p>Pastillero Digital - Tu salud es importante</p>
       </footer>
+
+      {showAcercaDe && <AcercaDe onClose={() => setShowAcercaDe(false)} />}
     </div>
   );
 }

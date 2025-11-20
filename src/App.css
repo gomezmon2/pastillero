@@ -89,6 +89,35 @@ body {
   font-weight: 600;
 }
 
+.utility-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-utility {
+  padding: 0.75rem 1.25rem;
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-utility:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-utility:active {
+  transform: translateY(0);
+}
+
 .notification {
   position: fixed;
   top: 100px;
@@ -142,6 +171,14 @@ body {
   }
 
   .btn-view {
+    flex: 1;
+  }
+
+  .utility-buttons {
+    justify-content: center;
+  }
+
+  .btn-utility {
     flex: 1;
   }
 

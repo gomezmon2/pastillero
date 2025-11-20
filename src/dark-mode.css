@@ -305,6 +305,96 @@
   color: white;
 }
 
+:root[data-theme="dark"] .view-toggle {
+  background: var(--bg-tertiary);
+}
+
+:root[data-theme="dark"] .btn-view {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .btn-view:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .btn-view.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* ========== UTILITY BUTTONS ========== */
+:root[data-theme="dark"] .btn-utility {
+  background: var(--bg-tertiary);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary);
+}
+
+:root[data-theme="dark"] .btn-utility:hover {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* ========== ACERCA DE ========== */
+:root[data-theme="dark"] .acerca-modal {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+:root[data-theme="dark"] .acerca-content {
+  background: var(--card-bg);
+}
+
+:root[data-theme="dark"] .btn-close-acerca {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .btn-close-acerca:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+:root[data-theme="dark"] .acerca-section h3 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .acerca-section p {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .acerca-section ul li {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .autor {
+  background: var(--bg-tertiary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .autor-icon {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .autor-info h4 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .autor-desc {
+  color: var(--text-tertiary);
+}
+
+:root[data-theme="dark"] .acerca-footer-section {
+  border-top-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .copyright {
+  color: var(--text-muted);
+}
+
+:root[data-theme="dark"] .acerca-actions {
+  border-top-color: var(--border-primary);
+}
+
 /* ========== ANIMACIONES ========== */
 @media (prefers-reduced-motion: reduce) {
   :root[data-theme="dark"] * {
