@@ -22,62 +22,64 @@ export const exportarMedicamentosPDF = async (medicamentos: Medicamento[], nombr
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 15;
-  const columnWidth = (pageWidth - margin * 3) / 2; // Dos columnas con margen central
-  let currentColumn = 0; // 0 = izquierda, 1 = derecha
+  const margin = 12;
+  const columnGap = 8;
+  const columnWidth = (pageWidth - margin * 2 - columnGap) / 2;
+  let currentColumn: 0 | 1 = 0;
   let yPosition = margin;
 
   // Función para obtener la posición X según la columna actual
   const getColumnX = () => {
-    return currentColumn === 0 ? margin : margin * 2 + columnWidth;
+    return currentColumn === 0 ? margin : margin + columnWidth + columnGap;
   };
 
   // Función para cambiar de columna o página
   const nextColumn = () => {
     if (currentColumn === 0) {
-      // Pasar a columna derecha
       currentColumn = 1;
     } else {
-      // Pasar a nueva página
       doc.addPage();
       currentColumn = 0;
-      yPosition = margin;
+      yPosition = 45; // Posición después del header
     }
   };
 
   // Función para verificar si hay espacio suficiente
-  const checkSpace = (requiredSpace: number) => {
-    if (yPosition + requiredSpace > pageHeight - margin - 10) {
+  const checkSpace = (requiredSpace: number): boolean => {
+    if (yPosition + requiredSpace > pageHeight - margin - 15) {
       nextColumn();
-      yPosition = margin;
+      yPosition = doc.internal.pages.length > 2 ? margin : 45;
       return true;
     }
     return false;
   };
 
-  // ========== ENCABEZADO (página completa) ==========
-  doc.setFillColor(102, 126, 234);
-  doc.rect(0, 0, pageWidth, 35, 'F');
+  // ========== ENCABEZADO (solo primera página) ==========
+  const drawHeader = () => {
+    doc.setFillColor(102, 126, 234);
+    doc.rect(0, 0, pageWidth, 40, 'F');
 
-  doc.setFontSize(22);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(255, 255, 255);
-  doc.text('💊 Hoja de Medicamentos', pageWidth / 2, 15, { align: 'center' });
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(255, 255, 255);
+    doc.text('Hoja de Medicamentos', pageWidth / 2, 15, { align: 'center' });
 
-  doc.setFontSize(11);
-  doc.setFont('helvetica', 'normal');
-  if (nombrePaciente) {
-    doc.text(`Paciente: ${nombrePaciente}`, pageWidth / 2, 25, { align: 'center' });
-  }
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    if (nombrePaciente) {
+      doc.text(`Paciente: ${nombrePaciente}`, pageWidth / 2, 26, { align: 'center' });
+    }
 
-  const fechaActual = new Date().toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-  doc.setFontSize(9);
-  doc.text(`Fecha: ${fechaActual}`, pageWidth / 2, 31, { align: 'center' });
+    const fechaActual = new Date().toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    doc.setFontSize(9);
+    doc.text(`Fecha: ${fechaActual}`, pageWidth / 2, 35, { align: 'center' });
+  };
 
+  drawHeader();
   yPosition = 45;
   doc.setTextColor(0);
 
@@ -92,48 +94,57 @@ export const exportarMedicamentosPDF = async (medicamentos: Medicamento[], nombr
   // ========== ITERAR SOBRE MEDICAMENTOS ==========
   for (let index = 0; index < medicamentos.length; index++) {
     const med = medicamentos[index];
-    const startY = yPosition;
 
-    // Calcular espacio necesario aproximado
-    let estimatedHeight = 40; // Base
-    if (med.imagenUrl) estimatedHeight += 35;
-    if (med.horarios && med.horarios.length > 0) estimatedHeight += 15;
-    if (med.notas) estimatedHeight += 20;
+    // Calcular altura aproximada de la tarjeta
+    let cardHeight = 35; // Base mínima
+    if (med.imagenUrl) cardHeight += 30;
+    if (med.dosis) cardHeight += 5;
+    if (med.frecuencia) cardHeight += 5;
+    if (med.numeroPastillas) cardHeight += 5;
+    if (med.fechaInicio) cardHeight += 5;
+    if (med.fechaFin) cardHeight += 5;
+    if (med.horarios && med.horarios.length > 0) {
+      cardHeight += 8 + Math.ceil(med.horarios.length / 3) * 5;
+    }
+    if (med.notas) {
+      const notasLines = doc.splitTextToSize(med.notas, columnWidth - 10);
+      cardHeight += 8 + notasLines.length * 4;
+    }
 
     // Verificar espacio
-    checkSpace(estimatedHeight);
-    const finalColumnX = getColumnX();
-    yPosition = startY === margin + 45 ? startY : yPosition;
+    checkSpace(cardHeight + 8);
 
-    // Borde de la tarjeta
-    const cardHeight = estimatedHeight;
-    doc.setDrawColor(200);
-    doc.setLineWidth(0.5);
-    doc.roundedRect(finalColumnX, yPosition, columnWidth, cardHeight, 3, 3);
+    const columnX = getColumnX();
+    const cardStartY = yPosition;
 
-    // Fondo del header
-    doc.setFillColor(245, 247, 250);
-    doc.roundedRect(finalColumnX, yPosition, columnWidth, 10, 3, 3, 'F');
+    // Dibujar tarjeta
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(columnX, cardStartY, columnWidth, cardHeight, 2, 2);
 
-    // Número y nombre del medicamento
-    doc.setFontSize(11);
+    // Header de la tarjeta
+    doc.setFillColor(102, 126, 234);
+    doc.roundedRect(columnX, cardStartY, columnWidth, 8, 2, 2, 'F');
+
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(102, 126, 234);
+    doc.setTextColor(255, 255, 255);
     const nombreTexto = `${index + 1}. ${med.nombre}`;
-    const nombreLines = doc.splitTextToSize(nombreTexto, columnWidth - 10);
-    doc.text(nombreLines, finalColumnX + 5, yPosition + 7);
-    yPosition += 12;
+    const nombreLines = doc.splitTextToSize(nombreTexto, columnWidth - 6);
+    doc.text(nombreLines[0], columnX + 3, cardStartY + 5.5);
 
-    // Imagen del medicamento (si existe)
+    let currentY = cardStartY + 11;
+    doc.setTextColor(60, 60, 60);
+
+    // Imagen del medicamento
     if (med.imagenUrl) {
       try {
         const imgData = await loadImageAsBase64(med.imagenUrl);
         if (imgData) {
-          const imgWidth = 25;
-          const imgHeight = 25;
-          const imgX = finalColumnX + (columnWidth - imgWidth) / 2;
-          doc.addImage(imgData, 'JPEG', imgX, yPosition, imgWidth, imgHeight);
-          yPosition += imgHeight + 3;
+          const imgSize = 22;
+          const imgX = columnX + (columnWidth - imgSize) / 2;
+          doc.addImage(imgData, 'JPEG', imgX, currentY, imgSize, imgSize);
+          currentY += imgSize + 3;
         }
       } catch (error) {
         console.error('Error al agregar imagen:', error);
@@ -141,109 +152,102 @@ export const exportarMedicamentosPDF = async (medicamentos: Medicamento[], nombr
     }
 
     // Información del medicamento
-    doc.setFontSize(9);
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.setTextColor(60, 60, 60);
 
-    const infoLines: string[] = [];
+    if (med.dosis) {
+      doc.text(`Dosis: ${med.dosis}`, columnX + 3, currentY);
+      currentY += 5;
+    }
 
-    if (med.dosis) infoLines.push(`📋 Dosis: ${med.dosis}`);
-    if (med.frecuencia) infoLines.push(`🔄 Frecuencia: ${med.frecuencia}`);
-    if (med.numeroPastillas) infoLines.push(`💊 Cantidad: ${med.numeroPastillas} pastilla(s)`);
+    if (med.frecuencia) {
+      doc.text(`Frecuencia: ${med.frecuencia}`, columnX + 3, currentY);
+      currentY += 5;
+    }
+
+    if (med.numeroPastillas) {
+      doc.text(`Cantidad: ${med.numeroPastillas} pastilla(s)`, columnX + 3, currentY);
+      currentY += 5;
+    }
 
     if (med.fechaInicio) {
       const fechaInicio = new Date(med.fechaInicio).toLocaleDateString('es-ES');
-      infoLines.push(`📅 Inicio: ${fechaInicio}`);
+      doc.text(`Inicio: ${fechaInicio}`, columnX + 3, currentY);
+      currentY += 5;
     }
 
     if (med.fechaFin) {
       const fechaFin = new Date(med.fechaFin).toLocaleDateString('es-ES');
-      infoLines.push(`📅 Fin: ${fechaFin}`);
+      doc.text(`Fin: ${fechaFin}`, columnX + 3, currentY);
+      currentY += 5;
     }
-
-    infoLines.forEach(line => {
-      const lines = doc.splitTextToSize(line, columnWidth - 10);
-      lines.forEach((l: string) => {
-        doc.text(l, finalColumnX + 5, yPosition);
-        yPosition += 5;
-      });
-    });
 
     // Horarios
     if (med.horarios && med.horarios.length > 0) {
-      yPosition += 2;
+      currentY += 2;
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(102, 126, 234);
-      doc.text('⏰ Horarios:', finalColumnX + 5, yPosition);
-      yPosition += 5;
+      doc.text('Horarios:', columnX + 3, currentY);
+      currentY += 5;
 
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(60, 60, 60);
       const horariosOrdenados = [...med.horarios].sort();
-      const horariosTexto = horariosOrdenados.join(' • ');
-      const horariosLines = doc.splitTextToSize(horariosTexto, columnWidth - 10);
+      const horariosTexto = horariosOrdenados.join(' - ');
+      const horariosLines = doc.splitTextToSize(horariosTexto, columnWidth - 6);
 
       horariosLines.forEach((line: string) => {
-        doc.text(line, finalColumnX + 5, yPosition);
-        yPosition += 4.5;
+        doc.text(line, columnX + 3, currentY);
+        currentY += 4.5;
       });
     }
 
     // Notas
     if (med.notas) {
-      yPosition += 2;
+      currentY += 2;
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(102, 126, 234);
-      doc.text('📝 Notas:', finalColumnX + 5, yPosition);
-      yPosition += 5;
+      doc.text('Notas:', columnX + 3, currentY);
+      currentY += 5;
 
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
+      doc.setFontSize(7);
       doc.setTextColor(80, 80, 80);
-      const notasLines = doc.splitTextToSize(med.notas, columnWidth - 10);
+      const notasLines = doc.splitTextToSize(med.notas, columnWidth - 6);
 
       notasLines.forEach((line: string) => {
-        doc.text(line, finalColumnX + 5, yPosition);
-        yPosition += 4;
+        doc.text(line, columnX + 3, currentY);
+        currentY += 4;
       });
-      doc.setFontSize(9);
+      doc.setFontSize(8);
     }
 
     // Indicador de prospecto
     if (med.prospecto) {
-      yPosition += 2;
+      currentY += 2;
       doc.setFontSize(7);
       doc.setTextColor(0, 100, 200);
-      doc.text('ℹ️ Info del prospecto disponible en app', finalColumnX + 5, yPosition);
-      doc.setFontSize(9);
+      doc.text('(i) Info del prospecto disponible en app', columnX + 3, currentY);
     }
 
-    // Preparar para siguiente medicamento
-    yPosition = startY + cardHeight + 8;
-
-    // Si este no es el último medicamento, preparar siguiente columna
-    if (index < medicamentos.length - 1) {
-      if (yPosition > pageHeight - margin - 60) {
-        nextColumn();
-        yPosition = margin;
-      }
-    }
+    // Mover posición Y al final de la tarjeta
+    yPosition = cardStartY + cardHeight + 6;
   }
 
   // ========== PIE DE PÁGINA ==========
-  const totalPages = doc.internal.pages.length - 1; // -1 porque la primera es null
+  const totalPages = doc.internal.pages.length - 1;
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
     doc.setFontSize(7);
     doc.setTextColor(120);
     doc.text(
-      'Generado por Pastillero Digital - No sustituye la consulta médica profesional',
+      'Generado por Pastillero Digital - No sustituye la consulta medica profesional',
       pageWidth / 2,
       pageHeight - 8,
       { align: 'center' }
     );
     doc.text(
-      `Página ${i} de ${totalPages}`,
+      `Pagina ${i} de ${totalPages}`,
       pageWidth - margin,
       pageHeight - 8,
       { align: 'right' }
