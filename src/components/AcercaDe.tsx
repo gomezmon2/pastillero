@@ -48,7 +48,7 @@ const AcercaDe: React.FC<AcercaDeProps> = ({ onClose }) => {
               <div className="autor">
                 <div className="autor-icon">👤</div>
                 <div className="autor-info">
-                  <h4>Ramón Gómez</h4>
+                  <h4>José Manuel Gómez</h4>
                   <p className="autor-rol">Creador del Proyecto</p>
                   <p className="autor-desc">Ideación, requisitos y coordinación del desarrollo</p>
                 </div>
@@ -91,7 +91,7 @@ const AcercaDe: React.FC<AcercaDeProps> = ({ onClose }) => {
             <p className="copyright">
               © 2024 Pastillero Digital
               <br />
-              Desarrollado con ❤️ por Ramón Gómez y Claude
+              Desarrollado con ❤️ por José Manuel Gómez y Claude
             </p>
           </section>
         </div>
