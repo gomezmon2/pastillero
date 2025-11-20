@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Medicamento } from '../types';
+import ProspectoView from './ProspectoView';
 import './MedicamentoList.css';
 
 interface MedicamentoListProps {
@@ -17,6 +18,8 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
   onMarcarTomado,
   onEdit,
 }) => {
+  const [medicamentoProspectoVer, setMedicamentoProspectoVer] = useState<Medicamento | null>(null);
+
   if (medicamentos.length === 0) {
     return (
       <div className="empty-state">
@@ -139,30 +142,53 @@ const MedicamentoList: React.FC<MedicamentoListProps> = ({
             <span className="info-value">{med.notas}</span>
           </div>
         )}
+
+        {/* Botón para ver prospecto si existe */}
+        {med.prospecto && (
+          <div className="medicamento-prospecto-btn-container">
+            <button
+              onClick={() => setMedicamentoProspectoVer(med)}
+              className="btn-ver-prospecto"
+            >
+              📋 Ver prospecto
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 
   return (
-    <div className="medicamento-list">
-      {medicamentosActivos.length > 0 && (
-        <section>
-          <h2 className="section-title">Medicamentos Activos</h2>
-          <div className="medicamentos-grid">
-            {medicamentosActivos.map(renderMedicamento)}
-          </div>
-        </section>
-      )}
+    <>
+      <div className="medicamento-list">
+        {medicamentosActivos.length > 0 && (
+          <section>
+            <h2 className="section-title">Medicamentos Activos</h2>
+            <div className="medicamentos-grid">
+              {medicamentosActivos.map(renderMedicamento)}
+            </div>
+          </section>
+        )}
 
-      {medicamentosInactivos.length > 0 && (
-        <section>
-          <h2 className="section-title">Medicamentos Inactivos</h2>
-          <div className="medicamentos-grid">
-            {medicamentosInactivos.map(renderMedicamento)}
-          </div>
-        </section>
+        {medicamentosInactivos.length > 0 && (
+          <section>
+            <h2 className="section-title">Medicamentos Inactivos</h2>
+            <div className="medicamentos-grid">
+              {medicamentosInactivos.map(renderMedicamento)}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Modal de prospecto */}
+      {medicamentoProspectoVer && medicamentoProspectoVer.prospecto && (
+        <ProspectoView
+          prospecto={medicamentoProspectoVer.prospecto}
+          nombreMedicamento={medicamentoProspectoVer.nombre}
+          onClose={() => setMedicamentoProspectoVer(null)}
+        />
       )}
-    </div>
+    </>
   );
 };
 

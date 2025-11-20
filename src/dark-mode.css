@@ -1,0 +1,314 @@
+/* Estilos de modo oscuro para todos los componentes */
+
+/* ========== MEDICAMENTO FORM ========== */
+:root[data-theme="dark"] .medicamento-form {
+  background: var(--card-bg);
+  box-shadow: var(--shadow-xl);
+}
+
+:root[data-theme="dark"] .medicamento-form h2 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .form-group label {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .form-group input,
+:root[data-theme="dark"] .form-group select,
+:root[data-theme="dark"] .form-group textarea {
+  background: var(--bg-tertiary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .form-group input:focus,
+:root[data-theme="dark"] .form-group select:focus,
+:root[data-theme="dark"] .form-group textarea:focus {
+  border-color: var(--border-focus);
+}
+
+/* ========== MEDICAMENTO LIST ========== */
+:root[data-theme="dark"] .medicamento-card {
+  background: var(--card-bg);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .medicamento-header {
+  background: var(--bg-tertiary);
+  border-bottom-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .medicamento-header h3 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .medicamento-info {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .info-label {
+  color: var(--text-tertiary);
+}
+
+:root[data-theme="dark"] .info-value {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .horario-badge {
+  background: var(--bg-tertiary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .horario-badge:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+:root[data-theme="dark"] .section-title {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .empty-state {
+  color: var(--text-muted);
+}
+
+/* ========== CALENDARIO VIEW ========== */
+:root[data-theme="dark"] .calendario-container {
+  background: var(--card-bg);
+  box-shadow: var(--shadow-lg);
+}
+
+:root[data-theme="dark"] .calendario-header h2 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .calendario-grid {
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .calendario-dia-header {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .calendario-celda {
+  background: var(--bg-secondary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .calendario-celda.hoy {
+  background: rgba(129, 140, 248, 0.1);
+  border-color: var(--accent-primary);
+}
+
+:root[data-theme="dark"] .celda-numero {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .celda-medicamento {
+  background: var(--bg-tertiary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .celda-medicamento-nombre {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .celda-medicamento-hora {
+  color: var(--text-tertiary);
+}
+
+/* ========== PROSPECTO COMPONENTS ========== */
+:root[data-theme="dark"] .prospecto-modal {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+:root[data-theme="dark"] .prospecto-content {
+  background: var(--card-bg);
+}
+
+:root[data-theme="dark"] .prospecto-header {
+  background: var(--gradient-primary);
+}
+
+:root[data-theme="dark"] .prospecto-tabs {
+  background: var(--bg-tertiary);
+  border-bottom-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .prospecto-tab {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .prospecto-tab:hover {
+  color: var(--accent-primary);
+  background: rgba(129, 140, 248, 0.1);
+}
+
+:root[data-theme="dark"] .prospecto-tab.active {
+  color: var(--accent-primary);
+  background: rgba(129, 140, 248, 0.1);
+}
+
+:root[data-theme="dark"] .prospecto-seccion h3 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .prospecto-seccion p {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .prospecto-footer {
+  background: var(--bg-tertiary);
+  border-top-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .prospecto-search {
+  background: var(--bg-tertiary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .prospecto-search-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--accent-error);
+  color: var(--accent-error);
+}
+
+:root[data-theme="dark"] .prospecto-search-resultado {
+  background: var(--card-bg);
+  border-color: var(--accent-info);
+}
+
+:root[data-theme="dark"] .resultado-header {
+  background: var(--gradient-info);
+}
+
+:root[data-theme="dark"] .resultado-campo strong {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .resultado-texto {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .btn-descartar-prospecto {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .btn-descartar-prospecto:hover {
+  background: var(--bg-hover);
+}
+
+/* ========== AUTH COMPONENT ========== */
+:root[data-theme="dark"] .auth-container {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+:root[data-theme="dark"] .auth-box {
+  background: var(--card-bg);
+  box-shadow: var(--shadow-xl);
+}
+
+:root[data-theme="dark"] .auth-header h1 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .auth-header p {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .auth-form input {
+  background: var(--bg-tertiary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .auth-form input:focus {
+  border-color: var(--border-focus);
+}
+
+:root[data-theme="dark"] .auth-form label {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .auth-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--accent-error);
+  color: var(--accent-error);
+}
+
+:root[data-theme="dark"] .auth-switch {
+  color: var(--accent-primary);
+}
+
+/* ========== NOTIFICATION ========== */
+:root[data-theme="dark"] .notification {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-primary);
+}
+
+/* ========== SCROLLBARS ========== */
+:root[data-theme="dark"] ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+:root[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--bg-hover);
+  border-radius: 6px;
+}
+
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--border-secondary);
+}
+
+/* ========== MODALES Y OVERLAYS ========== */
+:root[data-theme="dark"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+/* ========== BOTONES ========== */
+:root[data-theme="dark"] .btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .btn-secondary:hover {
+  background: var(--bg-hover);
+}
+
+/* ========== VISTA SWITCHES ========== */
+:root[data-theme="dark"] .vista-selector {
+  background: var(--bg-tertiary);
+  border-color: var(--border-primary);
+}
+
+:root[data-theme="dark"] .vista-btn {
+  color: var(--text-secondary);
+}
+
+:root[data-theme="dark"] .vista-btn.active {
+  background: var(--accent-primary);
+  color: white;
+}
+
+/* ========== ANIMACIONES ========== */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="dark"] * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

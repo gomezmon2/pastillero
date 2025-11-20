@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import type { Medicamento } from '../types';
+import type { Medicamento, ProspectoMedicamento } from '../types';
 import { uploadMedicamentoImage, compressImage } from '../utils/imageUpload';
+import ProspectoSearch from './ProspectoSearch';
 import './MedicamentoForm.css';
 
 interface MedicamentoFormProps {
@@ -26,6 +27,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [prospecto, setProspecto] = useState<ProspectoMedicamento | undefined>(undefined);
 
   // Cargar datos si estamos editando
   useEffect(() => {
@@ -45,6 +47,10 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
       // Cargar vista previa de imagen si existe
       if (medicamentoToEdit.imagenUrl) {
         setImagePreview(medicamentoToEdit.imagenUrl);
+      }
+      // Cargar prospecto si existe
+      if (medicamentoToEdit.prospecto) {
+        setProspecto(medicamentoToEdit.prospecto);
       }
     }
   }, [medicamentoToEdit]);
@@ -90,6 +96,7 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
       horarios: horariosFiltrados,
       imagenUrl: imagenUrl,
       activo: formData.activo,
+      prospecto: prospecto,
     });
 
     // Reset form solo si no estamos editando
@@ -354,6 +361,21 @@ const MedicamentoForm: React.FC<MedicamentoFormProps> = ({ onSubmit, onCancel, m
           rows={3}
         />
       </div>
+
+      {/* Componente de búsqueda de prospecto */}
+      <ProspectoSearch
+        nombreMedicamento={formData.nombre}
+        onProspectoEncontrado={(prospectoEncontrado) => setProspecto(prospectoEncontrado)}
+      />
+
+      {prospecto && (
+        <div className="prospecto-guardado-info">
+          ✓ Información del medicamento guardada
+          {prospecto.principioActivo && (
+            <span> - {prospecto.principioActivo}</span>
+          )}
+        </div>
+      )}
 
       <div className="form-actions">
         <button type="submit" className="btn-primary" disabled={uploadingImage}>

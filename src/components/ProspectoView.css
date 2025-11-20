@@ -1,0 +1,206 @@
+.prospecto-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.prospecto-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.prospecto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.prospecto-header h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.prospecto-principio-activo {
+  margin: 0.5rem 0 0 0;
+  font-size: 1rem;
+  opacity: 0.95;
+}
+
+.prospecto-laboratorio {
+  margin: 0.3rem 0 0 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.prospecto-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.prospecto-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.prospecto-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+  background: #f8fafc;
+}
+
+.prospecto-tab {
+  padding: 0.75rem 1rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.prospecto-tab:hover {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.prospecto-tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: rgba(102, 126, 234, 0.05);
+}
+
+.prospecto-body {
+  padding: 1.5rem;
+  min-height: 200px;
+}
+
+.prospecto-seccion {
+  display: none;
+}
+
+.prospecto-seccion.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.prospecto-seccion h3 {
+  margin: 0 0 1rem 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+}
+
+.prospecto-seccion p {
+  margin: 0;
+  line-height: 1.7;
+  color: #475569;
+  white-space: pre-wrap;
+}
+
+.prospecto-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 0 0 12px 12px;
+}
+
+.prospecto-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.prospecto-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.prospecto-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.prospecto-empty p {
+  margin: 0.5rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .prospecto-content {
+    max-height: 95vh;
+    margin: 1rem;
+  }
+
+  .prospecto-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .prospecto-tabs {
+    padding: 0.75rem 1rem 0;
+  }
+
+  .prospecto-tab {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .prospecto-body {
+    padding: 1rem;
+  }
+
+  .prospecto-seccion h3 {
+    font-size: 1.1rem;
+  }
+}

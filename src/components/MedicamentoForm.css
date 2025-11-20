@@ -133,6 +133,23 @@
   background: #e9ecef;
 }
 
+.prospecto-guardado-info {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  color: #065f46;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.prospecto-guardado-info span {
+  color: #047857;
+}
+
 @media (max-width: 768px) {
   .medicamento-form {
     padding: 1.5rem;

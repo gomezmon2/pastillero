@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from './supabase';
 
 const BUCKET_NAME = 'medicamentos-imagenes';
 

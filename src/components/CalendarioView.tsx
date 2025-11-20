@@ -26,6 +26,7 @@ const CalendarioView: React.FC<CalendarioViewProps> = ({
 }) => {
   const [mesActual, setMesActual] = useState(new Date());
   const [diasDelMes, setDiasDelMes] = useState<DiaCalendario[]>([]);
+  const [diaSeleccionado, setDiaSeleccionado] = useState<DiaCalendario | null>(null);
 
   const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   const meses = [
@@ -144,9 +145,22 @@ const CalendarioView: React.FC<CalendarioViewProps> = ({
     setMesActual(new Date());
   };
 
-  const handleTomaClick = (toma: DiaCalendario['tomas'][0], fecha: Date) => {
+  const handleTomaClick = (toma: DiaCalendario['tomas'][0], fecha: Date, event: React.MouseEvent) => {
+    // Prevenir que se propague al click del día
+    event.stopPropagation();
     // Permitir marcar y desmarcar
     onMarcarTomado(toma.medicamento.id, toma.horario, fecha, toma.tomado);
+  };
+
+  const handleDiaClick = (dia: DiaCalendario) => {
+    // Solo abrir modal si hay tomas
+    if (dia.tomas.length > 0) {
+      setDiaSeleccionado(dia);
+    }
+  };
+
+  const cerrarModal = () => {
+    setDiaSeleccionado(null);
   };
 
   const renderDia = (dia: DiaCalendario, index: number) => {
@@ -160,6 +174,7 @@ const CalendarioView: React.FC<CalendarioViewProps> = ({
         className={`calendario-dia ${!dia.esMesActual ? 'otro-mes' : ''} ${
           dia.esHoy ? 'hoy' : ''
         }`}
+        onClick={() => handleDiaClick(dia)}
       >
         <div className="dia-numero">{dia.fecha.getDate()}</div>
 
@@ -184,7 +199,7 @@ const CalendarioView: React.FC<CalendarioViewProps> = ({
                   key={idx}
                   className={`toma-item ${toma.tomado ? 'completada' : 'pendiente'} clickable`}
                   title={toma.tomado ? `Click para desmarcar: ${toma.medicamento.nombre} - ${toma.horario}` : `Click para marcar como tomado: ${toma.medicamento.nombre} - ${toma.horario}`}
-                  onClick={() => handleTomaClick(toma, dia.fecha)}
+                  onClick={(e) => handleTomaClick(toma, dia.fecha, e)}
                 >
                   <span className="toma-hora">{toma.horario}</span>
                   <span className="toma-nombre">{toma.medicamento.nombre}</span>
@@ -239,6 +254,66 @@ const CalendarioView: React.FC<CalendarioViewProps> = ({
           <span>Toma pendiente</span>
         </div>
       </div>
+
+      {/* Modal para vista móvil */}
+      {diaSeleccionado && (
+        <div className="modal-overlay" onClick={cerrarModal}>
+          <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>
+                {diasSemana[diaSeleccionado.fecha.getDay()]}{' '}
+                {diaSeleccionado.fecha.getDate()} de {meses[diaSeleccionado.fecha.getMonth()]}
+              </h3>
+              <button className="modal-cerrar" onClick={cerrarModal}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="modal-resumen">
+                <span className="tomas-completadas">
+                  ✓ {diaSeleccionado.tomas.filter((t) => t.tomado).length} completadas
+                </span>
+                <span className="tomas-pendientes">
+                  ⏰ {diaSeleccionado.tomas.filter((t) => !t.tomado).length} pendientes
+                </span>
+              </div>
+              <div className="modal-tomas-list">
+                {diaSeleccionado.tomas.map((toma, idx) => (
+                  <div
+                    key={idx}
+                    className={`modal-toma-item ${toma.tomado ? 'completada' : 'pendiente'}`}
+                    onClick={(e) => {
+                      handleTomaClick(toma, diaSeleccionado.fecha, e);
+                      // Actualizar el estado local para reflejar el cambio
+                      setTimeout(() => {
+                        const diaActualizado = diasDelMes.find(
+                          (d) => d.fecha.getTime() === diaSeleccionado.fecha.getTime()
+                        );
+                        if (diaActualizado) {
+                          setDiaSeleccionado(diaActualizado);
+                        }
+                      }, 100);
+                    }}
+                  >
+                    <div className="modal-toma-info">
+                      <span className="modal-toma-hora">{toma.horario}</span>
+                      <span className="modal-toma-nombre">{toma.medicamento.nombre}</span>
+                      <span className="modal-toma-dosis">{toma.medicamento.dosis}</span>
+                    </div>
+                    <div className="modal-toma-estado">
+                      {toma.tomado ? (
+                        <span className="estado-completado">✓ Tomado</span>
+                      ) : (
+                        <span className="estado-pendiente">👆 Marcar</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

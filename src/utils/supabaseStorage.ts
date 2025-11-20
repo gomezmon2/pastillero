@@ -1,12 +1,20 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from './supabase';
 import type { Medicamento, TomaMedicamento, Paciente } from '../types';
 
 export const supabaseStorage = {
   // Medicamentos
   getMedicamentos: async (): Promise<Medicamento[]> => {
+    // Obtener el usuario actual
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('No hay usuario autenticado');
+      return [];
+    }
+
     const { data, error } = await supabase
       .from('medicamentos')
       .select('*')
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -26,6 +34,7 @@ export const supabaseStorage = {
       fechaFin: med.fecha_fin,
       notas: med.notas,
       activo: med.activo,
+      prospecto: med.prospecto || undefined,
     }));
   },
 
@@ -36,10 +45,18 @@ export const supabaseStorage = {
   },
 
   addMedicamento: async (medicamento: Medicamento): Promise<Medicamento | null> => {
+    // Obtener el usuario actual
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('No hay usuario autenticado');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('medicamentos')
       .insert([{
         id: medicamento.id,
+        user_id: user.id,
         nombre: medicamento.nombre,
         dosis: medicamento.dosis,
         frecuencia: medicamento.frecuencia,
@@ -50,6 +67,7 @@ export const supabaseStorage = {
         fecha_fin: medicamento.fechaFin || null,
         notas: medicamento.notas || null,
         activo: medicamento.activo,
+        prospecto: medicamento.prospecto || null,
       }])
       .select()
       .single();
@@ -72,6 +90,7 @@ export const supabaseStorage = {
       fechaFin: data.fecha_fin,
       notas: data.notas,
       activo: data.activo,
+      prospecto: data.prospecto || undefined,
     };
   },
 
@@ -91,6 +110,7 @@ export const supabaseStorage = {
     if (medicamento.imagenUrl !== undefined) updateData.imagen_url = medicamento.imagenUrl || null;
     if (medicamento.fechaFin !== undefined) updateData.fecha_fin = medicamento.fechaFin || null;
     if (medicamento.notas !== undefined) updateData.notas = medicamento.notas || null;
+    if (medicamento.prospecto !== undefined) updateData.prospecto = medicamento.prospecto || null;
 
     const { error } = await supabase
       .from('medicamentos')
@@ -116,9 +136,17 @@ export const supabaseStorage = {
 
   // Tomas
   getTomas: async (): Promise<TomaMedicamento[]> => {
+    // Obtener el usuario actual
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('No hay usuario autenticado');
+      return [];
+    }
+
     const { data, error } = await supabase
       .from('tomas')
       .select('*')
+      .eq('user_id', user.id)
       .order('fecha', { ascending: false });
 
     if (error) {
@@ -142,10 +170,18 @@ export const supabaseStorage = {
   },
 
   addToma: async (toma: TomaMedicamento): Promise<void> => {
+    // Obtener el usuario actual
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('No hay usuario autenticado');
+      return;
+    }
+
     const { error } = await supabase
       .from('tomas')
       .insert([{
         id: toma.id,
+        user_id: user.id,
         medicamento_id: toma.medicamentoId,
         fecha: toma.fecha,
         hora: toma.hora,
@@ -187,9 +223,17 @@ export const supabaseStorage = {
 
   // Paciente
   getPaciente: async (): Promise<Paciente | null> => {
+    // Obtener el usuario actual
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('No hay usuario autenticado');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('pacientes')
       .select('*')
+      .eq('user_id', user.id)
       .single();
 
     if (error) {
@@ -206,14 +250,24 @@ export const supabaseStorage = {
   },
 
   savePaciente: async (paciente: Paciente): Promise<void> => {
+    // Obtener el usuario actual
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error('No hay usuario autenticado');
+      return;
+    }
+
     const { error } = await supabase
       .from('pacientes')
       .upsert([{
+        user_id: user.id,
         nombre: paciente.nombre,
         edad: paciente.edad,
         alergias: paciente.alergias,
         condiciones: paciente.condiciones,
-      }]);
+      }], {
+        onConflict: 'user_id'
+      });
 
     if (error) {
       console.error('Error al guardar paciente:', error);
