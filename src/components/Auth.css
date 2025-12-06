@@ -96,6 +96,16 @@
   text-align: center;
 }
 
+.auth-success {
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+  padding: 0.875rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 .auth-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -147,6 +157,30 @@
 }
 
 .auth-switch:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-forgot {
+  background: none;
+  border: none;
+  color: #9333ea;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  display: block;
+  width: 100%;
+}
+
+.auth-forgot:hover:not(:disabled) {
+  color: #7c3aed;
+  text-decoration: underline;
+}
+
+.auth-forgot:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
