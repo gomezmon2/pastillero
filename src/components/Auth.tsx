@@ -57,20 +57,37 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onRegister, error, cargando }) => 
   const handlePasswordReset = async () => {
     try {
       const { supabase } = await import('../utils/supabase');
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}`,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error de Supabase:', error);
+        throw new Error(error.message || 'Error al enviar email de recuperación');
+      }
 
-      setMensajeExito('✓ Te hemos enviado un email con instrucciones para restablecer tu contraseña');
+      console.log('Reset password response:', data);
+      setMensajeExito('✓ Te hemos enviado un email con instrucciones para restablecer tu contraseña. Revisa tu bandeja de entrada.');
       setTimeout(() => {
         setModo('login');
         setMensajeExito(null);
-      }, 5000);
+      }, 7000);
     } catch (error) {
       console.error('Error al solicitar restablecimiento:', error);
-      setErrorLocal(error instanceof Error ? error.message : 'Error al enviar email de recuperación');
+
+      let errorMessage = 'Error al enviar email de recuperación';
+      if (error instanceof Error) {
+        if (error.message.includes('fetch')) {
+          errorMessage = 'Error de conexión. Verifica tu conexión a internet.';
+        } else if (error.message.includes('User not found')) {
+          errorMessage = 'No existe una cuenta con este email.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      setErrorLocal(errorMessage);
     }
   };
 
