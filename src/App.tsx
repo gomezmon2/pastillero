@@ -81,11 +81,20 @@ function App() {
     }
   }, []);
 
-  // Cargar medicamentos al iniciar
+  // Cargar medicamentos cuando el usuario esté autenticado o en modo local
   useEffect(() => {
-    loadMedicamentos();
-    loadTomas();
-  }, []);
+    if (!authLoading && usuario) {
+      loadMedicamentos();
+      loadTomas();
+    } else if (!authLoading && !isSupabaseConfigured) {
+      // En modo local sin Supabase
+      loadMedicamentos();
+      loadTomas();
+    } else if (!authLoading && !usuario && isSupabaseConfigured) {
+      // Usuario no autenticado con Supabase configurado - setLoading a false
+      setLoading(false);
+    }
+  }, [authLoading, usuario]);
 
   const loadMedicamentos = async () => {
     setLoading(true);
